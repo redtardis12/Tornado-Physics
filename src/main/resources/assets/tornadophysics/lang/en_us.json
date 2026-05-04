@@ -1,0 +1,13 @@
+{
+  "itemGroup.tornadophysics": "Example Mod Tab",
+  "block.tornadophysics.example_block": "Example Block",
+  "item.tornadophysics.example_item": "Example Item",
+
+  "tornadophysics.configuration.title": "Tornado Physics Configs",
+  "tornadophysics.configuration.section.tornadophysics.common.toml": "Tornado Physics Configs",
+  "tornadophysics.configuration.section.tornadophysics.common.toml.title": "Tornado Physics Configs",
+  "tornadophysics.configuration.items": "Item List",
+  "tornadophysics.configuration.logDirtBlock": "Log Dirt Block",
+  "tornadophysics.configuration.magicNumberIntroduction": "Magic Number Text",
+  "tornadophysics.configuration.magicNumber": "Magic Number"
+}
