@@ -1,13 +1,19 @@
 {
-  "itemGroup.tornadophysics": "Example Mod Tab",
-  "block.tornadophysics.example_block": "Example Block",
-  "item.tornadophysics.example_item": "Example Item",
-
-  "tornadophysics.configuration.title": "Tornado Physics Configs",
-  "tornadophysics.configuration.section.tornadophysics.common.toml": "Tornado Physics Configs",
-  "tornadophysics.configuration.section.tornadophysics.common.toml.title": "Tornado Physics Configs",
-  "tornadophysics.configuration.items": "Item List",
-  "tornadophysics.configuration.logDirtBlock": "Log Dirt Block",
-  "tornadophysics.configuration.magicNumberIntroduction": "Magic Number Text",
-  "tornadophysics.configuration.magicNumber": "Magic Number"
+  "tornadophysics.configuration.physics": "Physics",
+  "tornadophysics.config.physics.enabled": "Enable tornado physics",
+  "tornadophysics.config.physics.tickSpeed": "Physics delay (ticks)",
+  "tornadophysics.config.physics.pullRange": "Tornado pull range multiplier",
+  "tornadophysics.config.physics.massResistance": "Mass resistance",
+  "tornadophysics.config.physics.baseSpeed": "Base pull speed",
+  "tornadophysics.config.physics.maxSpeed": "Maximum pull speed",
+  "tornadophysics.config.physics.angularSpeed": "Angular rotation speed",
+  "tornadophysics.config.physics.angularLimit": "Angular speed limit",
+  "tornadophysics.config.physics.baseOrbit": "Orbit strength",
+  "tornadophysics.config.physics.baseInward": "Inward pull strength",
+  "tornadophysics.config.physics.baseLift": "Vertical lift strength",
+  "tornadophysics.configuration.destruction": "BLock destruction",
+  "tornadophysics.config.destruction.enabled": "Enable tornado destruction",
+  "tornadophysics.config.destruction.delay": "Destruction delay (ticks)",
+  "tornadophysics.config.destruction.blocks": "Destroyable blocks list",
+  "tornadophysics.config.destruction.attempts": "Destruction attempts per tick"
 }
