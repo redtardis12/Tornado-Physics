@@ -11,9 +11,12 @@
   "tornadophysics.config.physics.baseOrbit": "Orbit strength",
   "tornadophysics.config.physics.baseInward": "Inward pull strength",
   "tornadophysics.config.physics.baseLift": "Vertical lift strength",
-  "tornadophysics.configuration.destruction": "BLock destruction",
-  "tornadophysics.config.destruction.enabled": "Enable tornado destruction",
+  "tornadophysics.config.physics.windGrip": "Wind grip",
+  "tornadophysics.configuration.destruction": "Block destruction",
+  "tornadophysics.config.destruction.mode": "Destruction mode",
   "tornadophysics.config.destruction.delay": "Destruction delay (ticks)",
   "tornadophysics.config.destruction.blocks": "Destroyable blocks list",
-  "tornadophysics.config.destruction.attempts": "Destruction attempts per tick"
+  "tornadophysics.config.destruction.attempts": "Destruction attempts per tick",
+  "tornadophysics.config.destruction.clusterSize": "Cluster size",
+  "tornadophysics.config.destruction.dropBlocks": "Blocks drop"
 }
