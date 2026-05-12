@@ -29,26 +29,13 @@ version="${mod_version}" #mandatory
 # A display name for the mod
 displayName="${mod_name}" #mandatory
 
-# A URL to query for updates for this mod. See the JSON update specification https://docs.neoforged.net/docs/misc/updatechecker/
-#updateJSONURL="https://change.me.example.invalid/updates.json" #optional
 
-# A URL for the "homepage" for this mod, displayed in the mod UI
-#displayURL="https://change.me.to.your.mods.homepage.example.invalid/" #optional
-
-# A file name (in the root of the mod JAR) containing a logo for display
-#logoFile="examplemod.png" #optional
-
-# A text field displayed in the mod UI
-#credits="" #optional
-
-# The authors of the mod, displayed in the mod UI (optional)
-#authors=""
-
-# The description text for the mod (multi line!) (#mandatory)
-description='''
-Example mod description.
-'''
-
+issueTrackerURL="https://github.com/redtardis12/Tornado-Physics/issues"
+description="Compatibility bridge between Sable and Weather2"
+logoFile="icon.png"
+logoBlur=true
+authors="Killey"
+displayURL="https://github.com/redtardis12/Tornado-Physics"
 # The [[mixins]] block allows you to declare your mixin config to FML so that it gets loaded.
 #[[mixins]]
 #config="${mod_id}.mixins.json"
@@ -85,6 +72,22 @@ Example mod description.
     type="required"
     # This version range declares a minimum of the current minecraft version up to but not including the next major version
     versionRange="${minecraft_version_range}"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="sable"
+    type="required"
+    # This version range declares a minimum of the current minecraft version up to but not including the next major version
+    # versionRange="[]"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="weather2"
+    type="required"
+    # This version range declares a minimum of the current minecraft version up to but not including the next major version
+    # versionRange="[]"
     ordering="NONE"
     side="BOTH"
 

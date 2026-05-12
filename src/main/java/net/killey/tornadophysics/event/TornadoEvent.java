@@ -202,7 +202,6 @@ public class TornadoEvent {
                         var assembled = SubLevelAssemblyHelper.assembleBlocks(shipLevel, startPos, clusterBlocks, bounds);
                         assembled.setName("crumble-0451");
                     }
-
                     break;
                 }
                 x += dx; y += dy; z += dz;

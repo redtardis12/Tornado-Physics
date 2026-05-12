@@ -63,7 +63,7 @@ public class Config {
                 .defineInRange("pullRange", 0.5, 0.1, 100.0);
 
         HEIGHT_OFFSET = BUILDER
-                .comment("Offsets tornado center's height lower (because by default it's too high)")
+                .comment("Offsets tornado center's height down (because by default it's too high)")
                 .translation("tornadophysics.config.physics.heightOffset")
                 .defineInRange("heightOffset", 30.0, 0.0, 200.0);
 
@@ -123,9 +123,9 @@ public class Config {
                 .defineInRange("destructionDelay", 10, 0, 1000);
 
         DESTROYABLE_BLOCKS = BUILDER
-                .comment("List of blocks that can be broken with Tornado")
+                .comment("List of blocks that can be broken with Tornado (use # for item tags)")
                 .translation("tornadophysics.config.destruction.blocks")
-                .defineListAllowEmpty("destroyableBlocks", List.of("minecraft:oak_planks"), () -> "", Config::validateItemName);
+                .defineListAllowEmpty("destroyableBlocks", List.of("minecraft:oak_planks", "#aeronautics:envelope", "#create:windmill_sails"), () -> "", Config::validateItemName);
 
         DESTRUCTION_ATTEMPTS = BUILDER
                 .comment("Amount of block destruction attempts per one destruction tick")
@@ -148,10 +148,14 @@ public class Config {
     }
 
     private static boolean validateItemName(final Object obj) {
-        if (obj instanceof String itemName && itemName.startsWith("#")) {
-            cachedBlockTags.add(TagKey.create(Registries.BLOCK, ResourceLocation.tryParse(itemName.substring(1))));
-            return true;
+        try {
+            if (obj instanceof String itemName && itemName.startsWith("#")) {
+                cachedBlockTags.add(TagKey.create(Registries.BLOCK, ResourceLocation.tryParse(itemName.substring(1))));
+                return true;
+            }
+            return obj instanceof String itemName && BuiltInRegistries.ITEM.containsKey(ResourceLocation.parse(itemName));
+        } catch (Exception e) {
+            return false;
         }
-        return obj instanceof String itemName && BuiltInRegistries.ITEM.containsKey(ResourceLocation.parse(itemName));
     }
 }

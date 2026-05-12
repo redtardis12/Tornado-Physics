@@ -3,6 +3,7 @@
   "tornadophysics.config.physics.enabled": "Enable tornado physics",
   "tornadophysics.config.physics.tickSpeed": "Physics delay (ticks)",
   "tornadophysics.config.physics.pullRange": "Tornado pull range multiplier",
+  "tornadophysics.config.physics.heightOffset": "Height offset",
   "tornadophysics.config.physics.massResistance": "Mass resistance",
   "tornadophysics.config.physics.baseSpeed": "Base pull speed",
   "tornadophysics.config.physics.maxSpeed": "Maximum pull speed",
