@@ -7,6 +7,7 @@ import dev.ryanhcode.sable.api.sublevel.SubLevelContainer;
 import dev.ryanhcode.sable.companion.math.BoundingBox3i;
 import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import net.killey.tornadophysics.Config;
+import net.killey.tornadophysics.logic.WindPhysics;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -49,6 +50,10 @@ public class TornadoEvent {
         java.util.List<ServerSubLevel> subLevels = serverContainer.getAllSubLevels();
 
         double pullRange = Config.PULL_RANGE.get();
+
+        for (ServerSubLevel subLevel : subLevels) {
+            WindPhysics.processGlobalWind(subLevel, weatherManager, tickDelay);
+        }
 
         for (WeatherObject storm : storms) {
             if (!(storm instanceof StormObject)) continue;

@@ -42,6 +42,9 @@ public class Config {
     public static final ModConfigSpec.IntValue CLUSTER_SIZE;
     public static final ModConfigSpec.BooleanValue DROP_BLOCKS;
 
+    public static final ModConfigSpec.DoubleValue GLOBAL_WIND_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue SAIL_MULTIPLIER;
+
     public static final ModConfigSpec SPEC;
 
     static {
@@ -141,6 +144,20 @@ public class Config {
                 .comment("Whether to drop destroyed blocks as items when VANILLA mode enabled")
                 .translation("tornadophysics.config.destruction.dropBlocks")
                 .define("dropBlocks", false);
+
+        BUILDER.pop();
+
+        BUILDER.comment("Settings for wind").push("wind");
+
+        GLOBAL_WIND_MULTIPLIER = BUILDER
+                .comment("Wind speed multiplier")
+                .translation("tornadophysics.config.wind.windMul")
+                .defineInRange("windMul", 1.0, 0.0, 10000.0);
+
+        SAIL_MULTIPLIER = BUILDER
+                .comment("Sail's acceleration in the wind")
+                .translation("tornadophysics.config.wind.sailMul")
+                .defineInRange("sailMul", 1.0, 0.0, 10000.0);
 
         BUILDER.pop();
 
