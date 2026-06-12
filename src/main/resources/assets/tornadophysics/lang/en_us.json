@@ -19,5 +19,10 @@
   "tornadophysics.config.destruction.blocks": "Destroyable blocks list",
   "tornadophysics.config.destruction.attempts": "Destruction attempts per tick",
   "tornadophysics.config.destruction.clusterSize": "Cluster size",
-  "tornadophysics.config.destruction.dropBlocks": "Blocks drop"
+  "tornadophysics.config.destruction.dropBlocks": "Blocks drop",
+  "tornadophysics.configuration.wind": "Wind",
+  "tornadophysics.config.wind.windToggle": "Enable wind physics",
+  "tornadophysics.config.wind.windMul": "Wind speed",
+  "tornadophysics.config.wind.sailMul": "Sails speed",
+  "tornadophysics.config.windLimit": "Speed limit"
 }

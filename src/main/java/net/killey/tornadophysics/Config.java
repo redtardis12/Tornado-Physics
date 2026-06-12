@@ -42,8 +42,10 @@ public class Config {
     public static final ModConfigSpec.IntValue CLUSTER_SIZE;
     public static final ModConfigSpec.BooleanValue DROP_BLOCKS;
 
+    public static final ModConfigSpec.BooleanValue WIND_TOGGLE;
     public static final ModConfigSpec.DoubleValue GLOBAL_WIND_MULTIPLIER;
     public static final ModConfigSpec.DoubleValue SAIL_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue WIND_LIMIT;
 
     public static final ModConfigSpec SPEC;
 
@@ -149,15 +151,25 @@ public class Config {
 
         BUILDER.comment("Settings for wind").push("wind");
 
+        WIND_TOGGLE = BUILDER
+                .comment("Enable wind physics")
+                .translation("tornadophysics.config.wind.windToggle")
+                .define("windToggle", true);
+
         GLOBAL_WIND_MULTIPLIER = BUILDER
                 .comment("Wind speed multiplier")
                 .translation("tornadophysics.config.wind.windMul")
-                .defineInRange("windMul", 1.0, 0.0, 10000.0);
+                .defineInRange("windMul", 0.8, 0.0, 10000.0);
 
         SAIL_MULTIPLIER = BUILDER
                 .comment("Sail's acceleration in the wind")
                 .translation("tornadophysics.config.wind.sailMul")
-                .defineInRange("sailMul", 1.0, 0.0, 10000.0);
+                .defineInRange("sailMul", 0.4, 0.0, 10000.0);
+
+        WIND_LIMIT = BUILDER
+                .comment("Speed at which wind is no longer considered")
+                .translation("tornadophysics.config.windLimit")
+                .defineInRange("windLimit", 1000.0, 0.0, 10000000.0);
 
         BUILDER.pop();
 

@@ -23,9 +23,5 @@ public class TornadoPhysicsClient {
     }
 
     @SubscribeEvent
-    static void onClientSetup(FMLClientSetupEvent event) {
-        // Some client setup code
-        TornadoPhysics.LOGGER.info("HELLO FROM CLIENT SETUP");
-        TornadoPhysics.LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
-    }
+    static void onClientSetup(FMLClientSetupEvent event) {}
 }

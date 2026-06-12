@@ -41,6 +41,7 @@ public class TornadoEvent {
 
         WeatherManagerServer weatherManager = ServerTickHandler.getWeatherManagerFor(serverLevel.dimension());
         if (weatherManager == null) return;
+        weatherManager.getWindManager().setWindTimeGust(1000);
 
         var storms = weatherManager.getStormObjects();
         if (storms == null || storms.isEmpty()) return;
@@ -51,8 +52,10 @@ public class TornadoEvent {
 
         double pullRange = Config.PULL_RANGE.get();
 
-        for (ServerSubLevel subLevel : subLevels) {
-            WindPhysics.processGlobalWind(subLevel, weatherManager, tickDelay);
+        if (Config.WIND_TOGGLE.get()) {
+            for (ServerSubLevel subLevel : subLevels) {
+                WindPhysics.processGlobalWind(subLevel, weatherManager, tickDelay);
+            }
         }
 
         for (WeatherObject storm : storms) {
