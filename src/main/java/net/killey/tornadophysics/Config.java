@@ -18,6 +18,12 @@ public class Config {
         SABLE
     }
 
+    public enum WindMode {
+        OFF,
+        ALL,
+        SAILS_ONLY
+    }
+
     public static final Set<TagKey<Block>> cachedBlockTags = new HashSet<>();
 
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
@@ -42,9 +48,11 @@ public class Config {
     public static final ModConfigSpec.IntValue CLUSTER_SIZE;
     public static final ModConfigSpec.BooleanValue DROP_BLOCKS;
 
-    public static final ModConfigSpec.BooleanValue WIND_TOGGLE;
+    public static final ModConfigSpec.EnumValue WIND_MODE;
     public static final ModConfigSpec.DoubleValue GLOBAL_WIND_MULTIPLIER;
     public static final ModConfigSpec.DoubleValue SAIL_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue WIND_DRAG;
+    public static final ModConfigSpec.DoubleValue MASS_DRAG;
     public static final ModConfigSpec.DoubleValue WIND_LIMIT;
 
     public static final ModConfigSpec SPEC;
@@ -151,10 +159,10 @@ public class Config {
 
         BUILDER.comment("Settings for wind").push("wind");
 
-        WIND_TOGGLE = BUILDER
+        WIND_MODE = BUILDER
                 .comment("Enable wind physics")
-                .translation("tornadophysics.config.wind.windToggle")
-                .define("windToggle", true);
+                .translation("tornadophysics.config.wind.windMode")
+                .defineEnum("windMode", WindMode.ALL);
 
         GLOBAL_WIND_MULTIPLIER = BUILDER
                 .comment("Wind speed multiplier")
@@ -165,6 +173,16 @@ public class Config {
                 .comment("Sail's acceleration in the wind")
                 .translation("tornadophysics.config.wind.sailMul")
                 .defineInRange("sailMul", 0.4, 0.0, 10000.0);
+
+        WIND_DRAG = BUILDER
+                .comment("Global wind drag")
+                .translation("tornadophysics.config.wind.windDrag")
+                .defineInRange("windDrag", 0.6, 0.0, 1000000.0);
+
+        MASS_DRAG = BUILDER
+                .comment("Mass resistance to wind")
+                .translation("tornadophysics.config.wind.massDrag")
+                .defineInRange("massDrag", 1000.0, 0.0, 100000.0);
 
         WIND_LIMIT = BUILDER
                 .comment("Speed at which wind is no longer considered")

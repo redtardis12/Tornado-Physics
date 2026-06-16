@@ -11,6 +11,7 @@ import net.killey.tornadophysics.logic.WindPhysics;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
@@ -41,7 +42,7 @@ public class TornadoEvent {
 
         WeatherManagerServer weatherManager = ServerTickHandler.getWeatherManagerFor(serverLevel.dimension());
         if (weatherManager == null) return;
-        weatherManager.getWindManager().setWindTimeGust(1000);
+        //weatherManager.getWindManager().setWindTimeGust(1000);
 
         var storms = weatherManager.getStormObjects();
         if (storms == null || storms.isEmpty()) return;
@@ -52,9 +53,9 @@ public class TornadoEvent {
 
         double pullRange = Config.PULL_RANGE.get();
 
-        if (Config.WIND_TOGGLE.get()) {
+        if (Config.WIND_MODE.get() != Config.WindMode.OFF) {
             for (ServerSubLevel subLevel : subLevels) {
-                WindPhysics.processGlobalWind(subLevel, weatherManager, tickDelay);
+                WindPhysics.processGlobalWind(subLevel, weatherManager, serverLevel, tickDelay);
             }
         }
 
