@@ -23,6 +23,8 @@
   "tornadophysics.configuration.wind": "Wind",
   "tornadophysics.config.wind.windToggle": "Enable wind physics",
   "tornadophysics.config.wind.windMul": "Wind speed",
-  "tornadophysics.config.wind.sailMul": "Sails speed",
+  "tornadophysics.config.wind.sailLift": "Sails lift",
+  "tornadophysics.config.wind.sailDrag": "Sails drag",
+  "tornadophysics.config.wind.windDrag": "General drag",
   "tornadophysics.config.windLimit": "Speed limit"
 }
