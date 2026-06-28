@@ -1,23 +1,24 @@
+### Tornado Physics
+This mod adds compatibility between Weather2 (Weather, Storms & Tornadoes) and Sable sub-level physics.
 
-Installation information
-=======
+**[Curseforge](https://www.curseforge.com/minecraft/mc-mods/tornado-physics)**
 
-This template repository can be directly cloned to get you started with a new
-mod. Simply create a new repository cloned from this one, by following the
-instructions provided by [GitHub](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
+**[Modrinth](https://modrinth.com/mod/tornado-physics)**
 
-Once you have your clone, simply open the repository in the IDE of your choice. The usual recommendation for an IDE is either IntelliJ IDEA or Eclipse.
 
-If at any point you are missing libraries in your IDE, or you've run into problems you can
-run `gradlew --refresh-dependencies` to refresh the local cache. `gradlew clean` to reset everything 
-{this does not affect your code} and then start the process again.
+### Currently added features:
+- Tornadoes can pull sub-levels and force them into a vortex motion
+- Physics is dependent on a tornado's intensity stage
+- Tornadoes can destroy blocks at the hull or break ships apart into physics objects
+- Physics and destruction logic are fully configurable
 
-Mapping Names:
-============
-By default, the MDK is configured to use the official mapping names from Mojang for methods and fields 
-in the Minecraft codebase. These names are covered by a specific license. All modders should be aware of this
-license. For the latest license text, refer to the mapping file itself, or the reference copy here:
-https://github.com/NeoForged/NeoForm/blob/main/Mojang.md
+### Requirements
+
+[Weather, Storms & Tornadoes](https://www.curseforge.com/minecraft/mc-mods/weather-storms-tornadoes)
+
+[CoroUtil (Weather2 dependency)](https://www.curseforge.com/minecraft/mc-mods/coroutil)
+
+[Sable](https://www.curseforge.com/minecraft/mc-mods/sable)
 
 Additional Resources: 
 ==========
