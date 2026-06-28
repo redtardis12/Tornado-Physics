@@ -1,31 +1,31 @@
 package net.killey.tornadophysics.logic;
 
-import dev.ryanhcode.sable.api.physics.force.ForceGroup;
-import dev.ryanhcode.sable.api.physics.force.ForceGroups;
-import dev.ryanhcode.sable.api.physics.force.QueuedForceGroup;
 import dev.ryanhcode.sable.api.physics.handle.RigidBodyHandle;
+import dev.ryanhcode.sable.companion.math.BoundingBox3ic;
 import dev.ryanhcode.sable.sublevel.ServerSubLevel;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import net.killey.tornadophysics.Config;
 import net.killey.tornadophysics.TornadoPhysics;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import org.joml.Quaterniondc;
-import org.joml.Vector3d;
-import org.joml.Vector3dc;
+import org.joml.*;
 import weather2.weathersystem.WeatherManagerServer;
 
+import java.lang.Math;
 import java.util.Map;
 import java.util.WeakHashMap;
 
 public class WindPhysics {
     private static final Map<ServerSubLevel, Boolean> outsideCache = new WeakHashMap<>();
     private static final Map<ServerSubLevel, Long> outsideScanTime = new WeakHashMap<>();
+    private static final Block swivelBearing = BuiltInRegistries.BLOCK.get(ResourceLocation.parse("simulated:swivel_bearing_link_block"));
 
     private static boolean isOutside(ServerSubLevel subLevel, ServerLevel level, Vector3d windDir) {
         long currentTime = level.getGameTime();
@@ -34,35 +34,40 @@ public class WindPhysics {
 
             Vector3dc subPos = subLevel.logicalPose().position();
             var box = subLevel.getPlot().getBoundingBox();
-            double minX = box.minX();
-            double minZ = box.minZ();
-            double maxX = box.maxX();
-            double maxZ = box.maxZ();
+            double h = box.height() / 2 + 1;
+            double w = box.width() / 2 + 1;
+            double l = box.length() / 2 + 1;
+            double rayLength = (Math.max(Math.max(l, w), h) / 2.0) + 10.0;
 
-            // Use the vertical center of the ship for the most reliable occlusion check
-            double centerY = (box.minY() + box.maxY()) / 2.0;
+            double m = subPos.y() + h;
 
-            // Define the 4 local corners
             Vec3[] localCorners = new Vec3[] {
-                    new Vec3(minX, centerY, minZ),
-                    new Vec3(minX, centerY, maxZ),
-                    new Vec3(maxX, centerY, minZ),
-                    new Vec3(maxX, centerY, maxZ)
+                    new Vec3(subPos.x()-w, m, subPos.z()-l),
+                    new Vec3(subPos.x()-w, m, subPos.z()+l),
+                    new Vec3(subPos.x()+w, m, subPos.z()-l),
+                    new Vec3(subPos.x()+w, m, subPos.z()+l)
             };
 
             boolean anyCornerOutside = false;
 
-            for (Vec3 localCorner : localCorners) {
-                //Vec3 startVecLocal = subPos + localCorner
+            for (Vec3 corner : localCorners) {
+                Vec3 endVec = corner.add(-windDir.x * rayLength, 0, -windDir.z * rayLength);
+                BlockHitResult hit = level.clip(new ClipContext(corner, endVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty()));
 
+                if (hit.getType() == HitResult.Type.MISS) {
+                    anyCornerOutside = true;
+                    break;
+                }
             }
 
-            //BlockHitResult hitResult = level.clip(new ClipContext(startVecLocal, endVecLocal, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty()));
-
-            //outsideCache.put(subLevel, hitResult.getType() != HitResult.Type.MISS);
+            outsideCache.put(subLevel, anyCornerOutside);
             outsideScanTime.put(subLevel, currentTime);
         }
         return outsideCache.getOrDefault(subLevel, true);
+    }
+
+    private static Vector3d getBottom(BoundingBox3ic box) {
+        return new Vector3d((box.minX() + box.maxX()) / 2, box.minY(), (box.minZ() + box.maxZ()) / 2);
     }
 
     public static void processGlobalWind(ServerSubLevel subLevel, WeatherManagerServer weatherManager, ServerLevel serverLevel, int physicsDelay) {
@@ -72,21 +77,9 @@ public class WindPhysics {
         float windAngle = windManager.getWindAngle(new Vec3(subPos.x(), subPos.y(), subPos.z()));
         float windSpeed = windManager.getWindSpeed();
 
-//        if (!subLevel.isTrackingIndividualQueuedForces()) subLevel.enableIndividualQueuedForcesTracking(true);
-//        Object2ObjectMap<ForceGroup, QueuedForceGroup> queuedForceGroups = subLevel.getQueuedForceGroups();
-//        if (queuedForceGroups != null) {
-//            for (Map.Entry<ForceGroup, QueuedForceGroup> entry : queuedForceGroups.entrySet()) {
-//                ResourceLocation groupId = ForceGroups.REGISTRY.getKey(entry.getKey());
-//                if (groupId == null) {
-//                    continue;
-//                }
-//                TornadoPhysics.LOGGER.info(entry.getValue().getForceTotal().getLocalForce().toString());
-//            }
-//        }
-
         double radians = Math.toRadians(windAngle);
         Vector3d windDir = new Vector3d(-Math.sin(radians), 0, Math.cos(radians)).normalize();
-        //if (!isOutside(subLevel, serverLevel, windDir)) TornadoPhysics.LOGGER.info("inside");
+        if (!isOutside(subLevel, serverLevel, windDir)) return;
 
         double windTargetSpeed = windSpeed * Config.GLOBAL_WIND_MULTIPLIER.get();
 
@@ -140,13 +133,8 @@ public class WindPhysics {
             if (alignment > 0.2) {
                 continue;
             }
-            double absAlignment = Math.abs(alignment);
-
-            Vector3d pushDirection = new Vector3d(sailDir).mul(Math.signum(alignment));
-            Vector3d liftForce = pushDirection.mul(absAlignment * Config.SAIL_LIFT.get());
-            Vector3d dragForce = new Vector3d(windDir).mul(absAlignment * Config.SAIL_DRAG.get());
-
-            totalWindForce.add(liftForce).add(dragForce);
+            Vector3d reflect = new Vector3d(windDir).reflect(sailDir).mul(Math.sin(alignment) * Config.SAIL_DRAG.get());
+            totalWindForce.add(reflect);
         }
 
         Vector3d targetVel = new Vector3d(0, 0, 0);
@@ -158,6 +146,16 @@ public class WindPhysics {
         Vector3d speedDifference = targetVel.sub(currentHorizontalVel);
 
         Vector3d windAcceleration = speedDifference.mul(massFactor * physicsDelay);
-        handle.addLinearAndAngularVelocity(windAcceleration, new Vector3d(0, 0, 0));
+
+        Vector3d bpos = getBottom(subLevel.getPlot().getBoundingBox());
+        if (handle.isValid()) {
+            if (subLevel.getLevel().getBlockState(BlockPos.containing(bpos.x, bpos.y, bpos.z)).is(swivelBearing)) {
+                Quaterniond inverseRotation = new Quaterniond(shipRotation).conjugate();
+                handle.applyImpulseAtPoint(getBottom(subLevel.getPlot().getBoundingBox()), windAcceleration.rotate(inverseRotation));
+            }
+            else {
+                handle.addLinearAndAngularVelocity(windAcceleration, new Vector3d(0, 0, 0));
+            }
+        }
     }
 }

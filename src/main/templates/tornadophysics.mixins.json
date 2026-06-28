@@ -3,7 +3,8 @@
   "package":"net.killey.tornadophysics.mixin",
   "compatibilityLevel":"JAVA_21",
   "mixins":[
-    "WindVaneBlockEntityMixin"
+    "WindVaneBlockEntityMixin",
+    "WindManagerMixin"
   ],
   "injectors":{"defaultRequire":1}
 }

@@ -11,7 +11,6 @@ import net.killey.tornadophysics.logic.WindPhysics;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
@@ -42,7 +41,6 @@ public class TornadoEvent {
 
         WeatherManagerServer weatherManager = ServerTickHandler.getWeatherManagerFor(serverLevel.dimension());
         if (weatherManager == null) return;
-        //weatherManager.getWindManager().setWindTimeGust(1000);
 
         var storms = weatherManager.getStormObjects();
         if (storms == null || storms.isEmpty()) return;
@@ -88,7 +86,12 @@ public class TornadoEvent {
     }
 
     private void processPhysics(ServerSubLevel subLevel, StormObject storm, Vector3d subPos, double falloffMultiplier, int physicsDelay) {
-        RigidBodyHandle handle = RigidBodyHandle.of(subLevel);
+        RigidBodyHandle handle;
+        try {
+            handle = RigidBodyHandle.of(subLevel);
+        } catch (RuntimeException e) {
+            return;
+        }
 
         double massResistance = Config.MASS_RESISTANCE.get();
 
@@ -124,8 +127,7 @@ public class TornadoEvent {
 
         Vector3d futureAng = new Vector3d(handle.getAngularVelocity(new Vector3d())).add(angularVelocity);
         angularVelocity = futureAng.lengthSquared() < Config.ANGULAR_LIMIT.get() ? angularVelocity : new Vector3d(0.0, 0.0, 0.0);
-
-        handle.addLinearAndAngularVelocity(linearVelChange, angularVelocity);
+        if (handle.isValid()) handle.addLinearAndAngularVelocity(linearVelChange, angularVelocity);
     }
 
     private void processBlockDestruction(ServerSubLevel subLevel, ServerLevel serverLevel) {
