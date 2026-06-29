@@ -186,7 +186,7 @@ public class Config {
         MASS_DRAG = BUILDER
                 .comment("Mass resistance to wind")
                 .translation("tornadophysics.config.wind.massDrag")
-                .defineInRange("massDrag", 1000.0, 0.0, 100000.0);
+                .defineInRange("massDrag", 100.0, 0.0, 100000.0);
 
         SAIL_STABILIZER = BUILDER
                 .comment("Stabilize sails when attached on the swivel bearing")
