@@ -11,6 +11,7 @@ import net.killey.tornadophysics.logic.WindPhysics;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
@@ -53,6 +54,11 @@ public class TornadoEvent {
 
         if (Config.WIND_MODE.get() != Config.WindMode.OFF) {
             for (ServerSubLevel subLevel : subLevels) {
+                if (subLevel.getSplitFromSubLevel() != null) {
+                    CompoundTag tag = new CompoundTag();
+                    tag.putBoolean("tornadophysics:on_swivel", true);
+                    subLevel.setUserDataTag(tag);
+                }
                 WindPhysics.processGlobalWind(subLevel, weatherManager, serverLevel, tickDelay);
             }
         }
@@ -75,8 +81,8 @@ public class TornadoEvent {
                     if (runPhysics && Config.PHYSICS_ENABLED.get()) {
                         processPhysics(subLevel, (StormObject) storm, subPos, falloffMultiplier, tickDelay);
                     }
-
-                    if (runDestruction && Config.DESTRUCTION_MODE.get() != Config.DestructionMode.OFF && !Objects.equals(subLevel.getName(), "crumble-0451")) {
+                    CompoundTag d = subLevel.getUserDataTag();
+                    if (runDestruction && Config.DESTRUCTION_MODE.get() != Config.DestructionMode.OFF && (d == null || !d.getBoolean("tornadophysics:is_crumble"))) {
                         processBlockDestruction(subLevel, serverLevel);
                     }
                 }
@@ -92,11 +98,8 @@ public class TornadoEvent {
         } catch (RuntimeException e) {
             return;
         }
-
         double massResistance = Config.MASS_RESISTANCE.get();
-
         double baseAngularSpeed = Config.ANGULAR_SPEED.get() * physicsDelay;
-
         double mass = subLevel.getMassTracker().getMass();
         double massFactor = massResistance / (massResistance + mass);
 
@@ -211,7 +214,9 @@ public class TornadoEvent {
                         final BoundingBox3i bounds = new BoundingBox3i(clusterBox);
 
                         var assembled = SubLevelAssemblyHelper.assembleBlocks(shipLevel, startPos, clusterBlocks, bounds);
-                        assembled.setName("crumble-0451");
+                        CompoundTag tag = new CompoundTag();
+                        tag.putBoolean("tornadophysics:is_crumble", true);
+                        assembled.setUserDataTag(tag);
                     }
                     break;
                 }

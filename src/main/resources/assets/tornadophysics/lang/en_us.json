@@ -21,13 +21,15 @@
   "tornadophysics.config.destruction.clusterSize": "Cluster size",
   "tornadophysics.config.destruction.dropBlocks": "Blocks drop",
   "tornadophysics.configuration.wind": "Wind",
-  "tornadophysics.config.wind.windToggle": "Enable wind physics",
+  "tornadophysics.config.wind.windMode": "Wind mode",
   "tornadophysics.config.wind.windMul": "Wind speed",
   "tornadophysics.config.wind.sailDrag": "Sails drag",
   "tornadophysics.config.wind.windDrag": "General drag",
   "tornadophysics.config.wind.massDrag": "Mass resistance",
+  "tornadophysics.config.wind.sailStab": "Sails stabilizer",
   "tornadophysics.config.wind.windLimit": "Speed limit",
   "tornadophysics.config.wind.gustMin": "Min gust angle",
-  "tornadophysics.config.wind.gustMax": "Max gust angle"
+  "tornadophysics.config.wind.gustMax": "Max gust angle",
+  "tornadophysics.config.wind.obsCheck": "Obstruction check"
 
 }

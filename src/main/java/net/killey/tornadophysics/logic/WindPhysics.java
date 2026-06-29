@@ -4,13 +4,9 @@ import dev.ryanhcode.sable.api.physics.handle.RigidBodyHandle;
 import dev.ryanhcode.sable.companion.math.BoundingBox3ic;
 import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import net.killey.tornadophysics.Config;
-import net.killey.tornadophysics.TornadoPhysics;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -25,20 +21,17 @@ import java.util.WeakHashMap;
 public class WindPhysics {
     private static final Map<ServerSubLevel, Boolean> outsideCache = new WeakHashMap<>();
     private static final Map<ServerSubLevel, Long> outsideScanTime = new WeakHashMap<>();
-    private static final Block swivelBearing = BuiltInRegistries.BLOCK.get(ResourceLocation.parse("simulated:swivel_bearing_link_block"));
 
     private static boolean isOutside(ServerSubLevel subLevel, ServerLevel level, Vector3d windDir) {
         long currentTime = level.getGameTime();
 
         if (!outsideCache.containsKey(subLevel) || currentTime - outsideScanTime.getOrDefault(subLevel, 0L) > 40L) {
-
             Vector3dc subPos = subLevel.logicalPose().position();
             var box = subLevel.getPlot().getBoundingBox();
             double h = box.height() / 2 + 1;
             double w = box.width() / 2 + 1;
             double l = box.length() / 2 + 1;
             double rayLength = (Math.max(Math.max(l, w), h) / 2.0) + 10.0;
-
             double m = subPos.y() + h;
 
             Vec3[] localCorners = new Vec3[] {
@@ -49,7 +42,6 @@ public class WindPhysics {
             };
 
             boolean anyCornerOutside = false;
-
             for (Vec3 corner : localCorners) {
                 Vec3 endVec = corner.add(-windDir.x * rayLength, 0, -windDir.z * rayLength);
                 BlockHitResult hit = level.clip(new ClipContext(corner, endVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty()));
@@ -59,7 +51,6 @@ public class WindPhysics {
                     break;
                 }
             }
-
             outsideCache.put(subLevel, anyCornerOutside);
             outsideScanTime.put(subLevel, currentTime);
         }
@@ -79,7 +70,7 @@ public class WindPhysics {
 
         double radians = Math.toRadians(windAngle);
         Vector3d windDir = new Vector3d(-Math.sin(radians), 0, Math.cos(radians)).normalize();
-        if (!isOutside(subLevel, serverLevel, windDir)) return;
+        if (Config.OBSTRUCTION_CHECK.get() && !isOutside(subLevel, serverLevel, windDir)) return;
 
         double windTargetSpeed = windSpeed * Config.GLOBAL_WIND_MULTIPLIER.get();
 
@@ -146,10 +137,9 @@ public class WindPhysics {
         Vector3d speedDifference = targetVel.sub(currentHorizontalVel);
 
         Vector3d windAcceleration = speedDifference.mul(massFactor * physicsDelay);
-
-        Vector3d bpos = getBottom(subLevel.getPlot().getBoundingBox());
+        CompoundTag userData = subLevel.getUserDataTag();
         if (handle.isValid()) {
-            if (subLevel.getLevel().getBlockState(BlockPos.containing(bpos.x, bpos.y, bpos.z)).is(swivelBearing)) {
+            if (Config.SAIL_STABILIZER.get() && userData != null && userData.getBoolean("tornadophysics:on_swivel")) {
                 Quaterniond inverseRotation = new Quaterniond(shipRotation).conjugate();
                 handle.applyImpulseAtPoint(getBottom(subLevel.getPlot().getBoundingBox()), windAcceleration.rotate(inverseRotation));
             }

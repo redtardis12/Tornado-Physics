@@ -53,9 +53,11 @@ public class Config {
     public static final ModConfigSpec.DoubleValue SAIL_DRAG;
     public static final ModConfigSpec.DoubleValue WIND_DRAG;
     public static final ModConfigSpec.DoubleValue MASS_DRAG;
+    public static final ModConfigSpec.BooleanValue SAIL_STABILIZER;
     public static final ModConfigSpec.DoubleValue WIND_LIMIT;
     public static final ModConfigSpec.DoubleValue WIND_GUST_ANGLE_MIN;
     public static final ModConfigSpec.DoubleValue WIND_GUST_ANGLE_MAX;
+    public static final ModConfigSpec.BooleanValue OBSTRUCTION_CHECK;
 
     public static final ModConfigSpec SPEC;
 
@@ -186,6 +188,11 @@ public class Config {
                 .translation("tornadophysics.config.wind.massDrag")
                 .defineInRange("massDrag", 1000.0, 0.0, 100000.0);
 
+        SAIL_STABILIZER = BUILDER
+                .comment("Stabilize sails when attached on the swivel bearing")
+                .translation("tornadophysics.config.wind.sailStab")
+                .define("sailStab", true);
+
         WIND_LIMIT = BUILDER
                 .comment("Speed at which wind is no longer considered")
                 .translation("tornadophysics.config.wind.windLimit")
@@ -194,12 +201,17 @@ public class Config {
         WIND_GUST_ANGLE_MIN = BUILDER
                 .comment("Minimum angle for random wind gust event")
                 .translation("tornadophysics.config.wind.gustMin")
-                .defineInRange("gustMin", 1.0, 1.0, 360);
+                .defineInRange("gustMin", 1.0, -360.0, 360.0);
 
         WIND_GUST_ANGLE_MAX = BUILDER
                 .comment("Maximum angle for random wind gust event")
                 .translation("tornadophysics.config.wind.gustMax")
-                .defineInRange("gustMax", 1.0, 1.0, 360);
+                .defineInRange("gustMax", 1.0, -360.0, 360.0);
+
+        OBSTRUCTION_CHECK = BUILDER
+                .comment("Check for sub-levels being obstructed from the wind")
+                .translation("tornadophysics.config.wind.obsCheck")
+                .define("obsCheck", true);
 
         BUILDER.pop();
 
