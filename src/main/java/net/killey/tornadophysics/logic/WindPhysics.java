@@ -1,10 +1,15 @@
 package net.killey.tornadophysics.logic;
 
+import dev.ryanhcode.sable.api.physics.force.ForceGroup;
+import dev.ryanhcode.sable.api.physics.force.ForceGroups;
+import dev.ryanhcode.sable.api.physics.force.QueuedForceGroup;
 import dev.ryanhcode.sable.api.physics.handle.RigidBodyHandle;
 import dev.ryanhcode.sable.companion.math.BoundingBox3ic;
 import dev.ryanhcode.sable.sublevel.ServerSubLevel;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import net.killey.tornadophysics.Config;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.BlockHitResult;
@@ -62,7 +67,19 @@ public class WindPhysics {
     }
 
     public static void processGlobalWind(ServerSubLevel subLevel, WeatherManagerServer weatherManager, ServerLevel serverLevel, int physicsDelay) {
-
+        Object2ObjectMap<ForceGroup, QueuedForceGroup> queuedForceGroups = subLevel.getQueuedForceGroups();
+        if (queuedForceGroups != null) {
+            for (Map.Entry<ForceGroup, QueuedForceGroup> entry : queuedForceGroups.entrySet()) {
+                ResourceLocation groupId = ForceGroups.REGISTRY.getKey(entry.getKey());
+                if (groupId == null) {
+                    continue;
+                }
+                if (groupId.getPath().equals("propulsion")) {
+                    queuedForceGroups.remove(entry.getKey());
+                    return;
+                }
+            }
+        }
         Vector3dc subPos = subLevel.logicalPose().position();
         var windManager = weatherManager.getWindManager();
         float windAngle = windManager.getWindAngle(new Vec3(subPos.x(), subPos.y(), subPos.z()));
