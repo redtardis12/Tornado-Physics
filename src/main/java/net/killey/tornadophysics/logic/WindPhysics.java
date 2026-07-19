@@ -8,6 +8,7 @@ import dev.ryanhcode.sable.companion.math.BoundingBox3ic;
 import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import net.killey.tornadophysics.Config;
+import net.killey.tornadophysics.TornadoPhysics;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -110,11 +111,11 @@ public class WindPhysics {
 
         if (!hasSails) {
             double driftTargetSpeed = windTargetSpeed * Config.WIND_DRAG.get();
-            Vector3d targetVel = new Vector3d(windDir).mul(driftTargetSpeed);
-
             Vector3d currentHorizontalVel = new Vector3d(currentVel.x(), 0, currentVel.z());
-            Vector3d speedDifference = targetVel.sub(currentHorizontalVel);
-
+            double currentAlignedSpeed = currentHorizontalVel.dot(windDir);
+            double rawAlignedDiff = driftTargetSpeed - currentAlignedSpeed;
+            double clampedAlignedDiff = Math.max(0.0, Math.min(rawAlignedDiff, driftTargetSpeed));
+            Vector3d speedDifference = new Vector3d(windDir).mul(clampedAlignedDiff);
             Vector3d windAcceleration = speedDifference.mul(massFactor * physicsDelay);
             handle.addLinearAndAngularVelocity(windAcceleration, new Vector3d(0, 0, 0));
             return;
@@ -145,13 +146,17 @@ public class WindPhysics {
             totalWindForce.add(reflect);
         }
 
-        Vector3d targetVel = new Vector3d(0, 0, 0);
-        if (totalWindForce.lengthSquared() > 0.001) {
-            targetVel = new Vector3d(totalWindForce).normalize().mul(totalWindForce.length() * windTargetSpeed);
-        }
-
         Vector3d currentHorizontalVel = new Vector3d(currentVel.x(), 0, currentVel.z());
-        Vector3d speedDifference = targetVel.sub(currentHorizontalVel);
+        Vector3d speedDifference = new Vector3d(0, 0, 0);
+
+        if (totalWindForce.lengthSquared() > 0.001) {
+            Vector3d pushDir = new Vector3d(totalWindForce).normalize();
+            double targetSpeed = totalWindForce.length() * windTargetSpeed;
+            double currentAlignedSpeed = currentHorizontalVel.dot(pushDir);
+            double rawAlignedDiff = targetSpeed - currentAlignedSpeed;
+            double clampedAlignedDiff = Math.max(0.0, Math.min(rawAlignedDiff, targetSpeed));
+            speedDifference = new Vector3d(pushDir).mul(clampedAlignedDiff);
+        }
 
         Vector3d windAcceleration = speedDifference.mul(massFactor * physicsDelay);
         CompoundTag userData = subLevel.getUserDataTag();
